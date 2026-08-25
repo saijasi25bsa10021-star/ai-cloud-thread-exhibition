@@ -7,13 +7,18 @@ from utils.detector import CloudThreatDetector
 from utils.rules import RuleEngine
 from utils.explanation import ThreatExplainer
 
-st.set_page_config(page_title="Threat Alerts | AI Cloud Threat Hunter", layout="wide")
+st.set_page_config(page_title="Threat Alerts | AI Cloud Threat Hunter", layout="wide", page_icon="🚨")
+
+# Block access if unauthenticated
+if not st.session_state.get("authenticated", False):
+    st.warning("⚠️ Please authenticate on the main portal before accessing alert streams.")
+    st.stop()
 
 st.title("🚨 Critical Threat Alerts & SOC Analysis")
-st.caption("Detailed breakdown of detected anomalies, AI explanations, and recommended remediations.")
+st.caption(f"Operator: **{st.session_state.get('user')}** | Access Tier: **{st.session_state.get('role').upper()}**")
 
 if not os.path.exists("dataset/cloud_logs.csv"):
-    st.warning("Please visit the main Dashboard first to generate dataset and initialize models.")
+    st.warning("Main telemetry data initializing. Please visit the dashboard first.")
     st.stop()
 
 @st.cache_data
@@ -29,7 +34,7 @@ def load_analyzed_data():
 
 df = load_analyzed_data()
 
-# Identify all threats (ML OR Rule-based)
+# Evaluate threats
 alerts_list = []
 for idx, row in df.iterrows():
     rule_threats = RuleEngine.evaluate_rules(row)
@@ -50,21 +55,16 @@ for idx, row in df.iterrows():
 
 alerts_df = pd.DataFrame(alerts_list)
 
-# Severity Filter Sidebar
 severity_filter = st.sidebar.multiselect(
     "Filter Severity:", 
     options=["Critical", "High", "Medium"], 
     default=["Critical", "High"]
 )
 
-if severity_filter:
-    filtered_alerts = alerts_df[alerts_df['Severity'].isin(severity_filter)]
-else:
-    filtered_alerts = alerts_df
+filtered_alerts = alerts_df[alerts_df['Severity'].isin(severity_filter)] if severity_filter else alerts_df
 
 st.subheader(f"Showing {len(filtered_alerts)} Active Security Alerts")
 
-# Display Alerts in Card Format
 for _, alert in filtered_alerts.head(20).iterrows():
     severity_color = "🔴" if alert['Severity'] == "Critical" else ("🟠" if alert['Severity'] == "High" else "🟡")
     
