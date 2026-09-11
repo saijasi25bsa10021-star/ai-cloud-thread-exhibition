@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Access Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12141c;
+  --panel:#1a1d27;
+  --panel-2:#20232f;
+  --panel-3:#252938;
+  --accent:#c9a24b;
+  --accent-dim:#9c7f3d;
+  --accent-soft:rgba(201,162,75,0.14);
+  --text:#edEDf0;
+  --text-muted:#9195a6;
+  --text-faint:#6b6f80;
+  --border:#2b2f3d;
+  --border-soft:#232735;
+  --success:#4caf7d;
+  --success-soft:rgba(76,175,125,0.14);
+  --error:#e2604f;
+  --error-soft:rgba(226,96,79,0.14);
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:16px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+h1,h2,h3,.serif{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  letter-spacing:-0.01em;
+  margin:0;
+  color:var(--text);
+}
+a{color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+input,textarea{font-family:inherit;}
+::selection{background:var(--accent-soft);color:var(--text);}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+.hidden{display:none !important;}
+
+/* ---------- Layout shells ---------- */
+.view{min-height:100vh;width:100%;}
+
+/* ---------- Login ---------- */
+#view-login{
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(ellipse 900px 600px at 15% 10%, rgba(201,162,75,0.08), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 85% 90%, rgba(201,162,75,0.05), transparent 60%),
+    var(--bg);
+}
+.login-card{
+  display:flex;
+  width:100%;
+  max-width:880px;
+  min-height:520px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:0 40px 80px -30px rgba(0,0,0,0.6);
+  animation:rise 0.6s cubic-bezier(.16,1,.3,1);
+}
+@keyframes rise{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.login-brand{
+  flex:0 0 38%;
+  background:
+    linear-gradient(165deg, var(--panel-3) 0%, var(--panel) 100%);
+  border-right:1px solid var(--border);
+  padding:44px 36px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  position:relative;
+}
+.login-brand::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background-image:
+    linear-gradient(var(--border-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+  background-size:28px 28px;
+  opacity:0.35;
+  mask-image:linear-gradient(180deg, black, transparent 85%);
+}
+.brand-mark{position:relative;}
+.brand-mark .mark{
+  width:38px;height:38px;
+  border-radius:9px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:700;font-size:19px;color:#181a22;
+  margin-bottom:18px;
+}
+.brand-mark h1{font-size:26px;line-height:1.15;}
+.brand-mark p{color:var(--text-muted);margin-top:10px;font-size:13.5px;max-width:26ch;}
+.brand-quote{position:relative;color:var(--text-faint);font-size:13px;border-left:2px solid var(--accent-dim);padding-left:14px;}
+
+.login-form-side{
+  flex:1;
+  padding:48px 44px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.login-form-side h2{font-size:22px;margin-bottom:6px;}
+.login-form-side .sub{color:var(--text-muted);font-size:13.5px;margin-bottom:30px;}
+.field{margin-bottom:18px;}
+.field label{
+  display:block;font-size:12.5px;color:var(--text-muted);
+  margin-bottom:7px;font-weight:500;
+}
+.field .input-wrap{position:relative;}
+.field input{
+  width:100%;
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px 14px;
+  border-radius:var(--radius-sm);
+  font-size:14.5px;
+  transition:border-color .15s ease, background .15s ease;
+}
+.field input:focus{border-color:var(--accent-dim);background:var(--panel-3);}
+.field .toggle-visibility{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text-faint);
+  font-size:12px;padding:6px 8px;border-radius:6px;
+}
+.field .toggle-visibility:hover{color:var(--text-muted);background:var(--panel-3);}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:none;border-radius:var(--radius-sm);
+  padding:11px 20px;font-size:14px;font-weight:600;
+  transition:transform .12s ease, filter .12s ease, background .15s ease;
+}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--accent);color:#181a22;width:100%;margin-top:6px;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-ghost{background:var(--panel-2);color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--panel-3);}
+.btn-danger-outline{background:transparent;color:var(--error);border:1px solid rgba(226,96,79,0.35);}
+.btn-danger-outline:hover{background:var(--error-soft);}
+.btn-sm{padding:7px 13px;font-size:13px;}
+
+.msg{
+  font-size:13px;padding:10px 13px;border-radius:var(--radius-sm);
+  margin-bottom:16px;display:none;
+}
+.msg.error{background:var(--error-soft);color:#f2988a;display:block;}
+.msg.success{background:var(--success-soft);color:#8fd6ac;display:block;}
+
+.login-hint{
+  margin-top:22px;padding-top:18px;border-top:1px solid var(--border-soft);
+  font-size:12px;color:var(--text-faint);line-height:1.7;
+}
+.login-hint b{color:var(--text-muted);font-weight:600;}
+
+/* ---------- Shared app chrome ---------- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 28px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:30;
+}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-left .mark{
+  width:32px;height:32px;border-radius:8px;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:700;color:#181a22;font-size:16px;
+}
+.topbar-title{font-family:'Fraunces',serif;font-size:17px;font-weight:600;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.profile-chip{
+  display:flex;align-items:center;gap:9px;
+  background:var(--panel-2);border:1px solid var(--border);
+  padding:6px 12px 6px 6px;border-radius:999px;font-size:13px;
+}
+.profile-chip .avatar{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11.5px;font-weight:700;
+}
+.profile-chip .role-tag{
+  font-size:10.5px;color:var(--text-faint);
+  text-transform:lowercase;letter-spacing:0.02em;
+}
+
+/* ---------- Dashboard ---------- */
+#view-dashboard .dash-body{
+  display:flex;
+  min-height:calc(100vh - 65px);
+}
+.sidebar{
+  width:210px;flex:0 0 210px;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:20px 14px;
+}
+.sidebar-nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 13px;border-radius:var(--radius-sm);
+  color:var(--text-muted);font-size:13.5px;font-weight:500;
+  cursor:pointer;margin-bottom:3px;border-left:2px solid transparent;
+  transition:background .12s ease, color .12s ease;
+}
+.sidebar-nav-item:hover{background:var(--panel-2);color:var(--text);}
+.sidebar-nav-item.active{
+  background:var(--accent-soft);color:var(--accent);
+  border-left:2px solid var(--accent);
+}
+.dash-main{flex:1;padding:30px 34px;max-width:1180px;}
+.dash-section-head{margin-bottom:22px;}
+.dash-section-head .eyebrow{color:var(--text-faint);font-size:12.5px;}
+.dash-section-head h2{font-size:22px;margin-top:4px;}
+
+.stat-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px;
+}
+.stat-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius-md);
+  padding:18px 18px;
+}
+.stat-card .stat-label{font-size:12px;color:var(--text-muted);margin-bottom:8px;}
+.stat-card .stat-value{font-family:'Fraunces',serif;font-size:26px;font-weight:600;}
+.stat-card .stat-delta{font-size:12px;margin-top:6px;}
+.stat-delta.up{color:var(--success);}
+.stat-delta.down{color:var(--error);}
+
+.panel-block{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:22px;margin-bottom:20px;
+}
+.panel-block h3{font-size:15.5px;margin-bottom:16px;}
+
+table.activity-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+table.activity-table th{
+  text-align:left;color:var(--text-faint);font-weight:600;font-size:11.5px;
+  padding:0 10px 10px 10px;border-bottom:1px solid var(--border);
+}
+table.activity-table td{
+  padding:12px 10px;border-bottom:1px solid var(--border-soft);color:var(--text-muted);
+}
+table.activity-table td.user-cell{color:var(--text);font-weight:500;}
+.status-pill{
+  font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600;
+}
+.status-pill.active{background:var(--success-soft);color:var(--success);}
+.status-pill.idle{background:rgba(201,162,75,0.14);color:var(--accent);}
+.status-pill.offline{background:var(--panel-3);color:var(--text-faint);}
+
+.sys-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.sys-row:last-child{margin-bottom:0;}
+.sys-row .sys-label{width:120px;flex:0 0 120px;font-size:13px;color:var(--text-muted);}
+.sys-bar-track{flex:1;height:7px;background:var(--panel-2);border-radius:999px;overflow:hidden;}
+.sys-bar-fill{height:100%;background:var(--accent);border-radius:999px;}
+.sys-row .sys-value{width:44px;text-align:right;font-size:12.5px;color:var(--text-faint);}
+
+/* ---------- Settings form (shared) ---------- */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;max-width:520px;}
+.settings-grid .field.full{grid-column:1 / -1;}
+.settings-actions{display:flex;gap:10px;margin-top:6px;}
+
+/* ---------- Portfolio ---------- */
+#view-portfolio .portfolio-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 40px;background:rgba(18,20,28,0.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:30;
+}
+.portfolio-nav .pname{font-family:'Fraunces',serif;font-size:17px;}
+.pf-hero{
+  padding:100px 40px 90px;max-width:900px;margin:0 auto;text-align:left;
+}
+.pf-hero .eyebrow{color:var(--accent);font-size:13px;font-weight:600;margin-bottom:16px;letter-spacing:0.01em;}
+.pf-hero h1{font-size:clamp(34px,6vw,58px);line-height:1.08;max-width:14ch;}
+.pf-hero p.lede{color:var(--text-muted);font-size:16.5px;max-width:56ch;margin-top:20px;line-height:1.65;}
+.pf-hero .pf-cta{display:flex;gap:12px;margin-top:30px;}
+
+.pf-section{max-width:900px;margin:0 auto;padding:60px 40px;border-top:1px solid var(--border-soft);}
+.pf-section h2{font-size:24px;margin-bottom:18px;}
+.pf-section p{color:var(--text-muted);max-width:64ch;line-height:1.75;}
+
+.projects-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:8px;}
+.project-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:22px;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.project-card:hover{border-color:var(--accent-dim);transform:translateY(-2px);}
+.project-card .p-tag{font-size:11.5px;color:var(--accent);font-weight:600;margin-bottom:10px;}
+.project-card h3{font-size:16.5px;margin-bottom:8px;}
+.project-card p{font-size:13.5px;color:var(--text-muted);margin:0;}
+
+.skills-wrap{display:flex;flex-wrap:wrap;gap:9px;margin-top:8px;}
+.skill-tag{
+  background:var(--panel-2);border:1px solid var(--border);
+  padding:8px 14px;border-radius:999px;font-size:13px;color:var(--text-muted);
+}
+
+.contact-form{max-width:520px;margin-top:8px;}
+.pf-footer{padding:34px 40px;text-align:left;color:var(--text-faint);font-size:12.5px;max-width:900px;margin:0 auto;border-top:1px solid var(--border-soft);}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(10,11,16,0.65);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;padding:20px;
+  animation:fadeIn .15s ease;
+}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal-box{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:30px 30px 26px;
+  width:100%;max-width:480px;
+  box-shadow:0 40px 80px -30px rgba(0,0,0,0.7);
+  animation:rise .25s cubic-bezier(.16,1,.3,1);
+}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+.modal-head h2{font-size:19px;}
+.modal-close{background:none;border:none;color:var(--text-faint);font-size:20px;line-height:1;padding:2px 6px;border-radius:6px;}
+.modal-close:hover{color:var(--text);background:var(--panel-2);}
+.modal-sub{color:var(--text-muted);font-size:13px;margin-bottom:22px;}
+
+/* ---------- Toast ---------- */
+#toast-stack{
+  position:fixed;bottom:22px;right:22px;z-index:200;
+  display:flex;flex-direction:column;gap:10px;max-width:320px;
+}
+.toast{
+  padding:13px 16px;border-radius:var(--radius-sm);font-size:13.5px;
+  background:var(--panel-3);border:1px solid var(--border);
+  box-shadow:0 14px 30px -10px rgba(0,0,0,0.5);
+  animation:toastIn .2s ease;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.toast.success{border-color:rgba(76,175,125,0.35);color:#a4e0be;}
+.toast.error{border-color:rgba(226,96,79,0.35);color:#f2988a;}
+
+/* ---------- Responsive ---------- */
+@media (max-width:860px){
+  .login-brand{display:none;}
+  .login-card{max-width:420px;}
+  .login-form-side{padding:38px 28px;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .projects-grid{grid-template-columns:1fr;}
+  .settings-grid{grid-template-columns:1fr;}
+  #view-dashboard .dash-body{flex-direction:column;}
+  .sidebar{width:100%;flex:none;border-right:none;border-bottom:1px solid var(--border);
+    display:flex;gap:6px;padding:12px 16px;overflow-x:auto;}
+  .sidebar-nav-item{border-left:none;border-bottom:2px solid transparent;white-space:nowrap;}
+  .sidebar-nav-item.active{border-left:none;border-bottom:2px solid var(--accent);}
+  .dash-main{padding:22px 18px;}
+  .topbar,.portfolio-nav{padding:14px 18px;}
+  .pf-hero,.pf-section,.pf-footer{padding-left:22px;padding-right:22px;}
+  .pf-hero{padding-top:64px;padding-bottom:56px;}
+}
+@media (max-width:480px){
+  .stat-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN VIEW ============ -->
+<div id="view-login" class="view">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark">
+        <div class="mark">M</div>
+        <h1>Meridian</h1>
+        <p>A single gate for the people who build the work and the person who shows it.</p>
+      </div>
+      <div class="brand-quote">Every session starts here — one door, two paths.</div>
+    </div>
+    <div class="login-form-side">
+      <h2>Sign in</h2>
+      <div class="sub">Enter your credentials to continue.</div>
+      <div id="login-msg" class="msg error"></div>
+      <form id="login-form" autocomplete="off">
+        <div class="field">
+          <label for="login-username">Username</label>
+          <div class="input-wrap">
+            <input type="text" id="login-username" placeholder="e.g. ADMIN" autocomplete="username">
+          </div>
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="toggle-visibility" data-target="login-password">Show</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </form>
+      <div class="login-hint">
+        <b>Admin</b> — username ADMIN, password admin1809<br>
+        <b>User</b> — username user, password 12345678
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN DASHBOARD VIEW ============ -->
+<div id="view-dashboard" class="view hidden">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="mark">M</div>
+      <div class="topbar-title">Meridian Console</div>
+    </div>
+    <div class="topbar-right">
+      <div class="profile-chip">
+        <div class="avatar" id="admin-avatar">A</div>
+        <div>
+          <div id="admin-name-display">ADMIN</div>
+          <div class="role-tag">administrator</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="admin-logout-btn">Log out</button>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="sidebar">
+      <div class="sidebar-nav-item active" data-dash-tab="overview">Overview</div>
+      <div class="sidebar-nav-item" data-dash-tab="users">User activity</div>
+      <div class="sidebar-nav-item" data-dash-tab="security">Security</div>
+    </div>
+
+    <div class="dash-main">
+      <!-- Overview tab -->
+      <div class="dash-tab" id="dash-tab-overview">
+        <div class="dash-section-head">
+          <div class="eyebrow">Console</div>
+          <h2>Overview</h2>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">Visitors today</div>
+            <div class="stat-value">2,481</div>
+            <div class="stat-delta up">↑ 12.4% vs yesterday</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active sessions</div>
+            <div class="stat-value">184</div>
+            <div class="stat-delta up">↑ 3.1%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Conversion rate</div>
+            <div class="stat-value">4.7%</div>
+            <div class="stat-delta down">↓ 0.6%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Revenue (MTD)</div>
+            <div class="stat-value">$18.2k</div>
+            <div class="stat-delta up">↑ 8.9%</div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h3>System status</h3>
+          <div class="sys-row">
+            <div class="sys-label">Server load</div>
+            <div class="sys-bar-track"><div class="sys-bar-fill" style="width:38%"></div></div>
+            <div class="sys-value">38%</div>
+          </div>
+          <div class="sys-row">
+            <div class="sys-label">Storage used</div>
+            <div class="sys-bar-track"><div class="sys-bar-fill" style="width:64%"></div></div>
+            <div class="sys-value">64%</div>
+          </div>
+          <div class="sys-row">
+            <div class="sys-label">Uptime (30d)</div>
+            <div class="sys-bar-track"><div class="sys-bar-fill" style="width:99%"></div></div>
+            <div class="sys-value">99.9%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users tab -->
+      <div class="dash-tab hidden" id="dash-tab-users">
+        <div class="dash-section-head">
+          <div class="eyebrow">Console</div>
+          <h2>User activity</h2>
+        </div>
+        <div class="panel-block">
+          <table class="activity-table">
+            <thead>
+              <tr><th>User</th><th>Last action</th><th>Location</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="user-cell">user</td><td>Viewed portfolio</td><td>Warsaw, PL</td><td><span class="status-pill active">Active</span></td></tr>
+              <tr><td class="user-cell">j.kowal</td><td>Submitted contact form</td><td>Berlin, DE</td><td><span class="status-pill idle">Idle</span></td></tr>
+              <tr><td class="user-cell">m.reyes</td><td>Updated password</td><td>Austin, US</td><td><span class="status-pill offline">Offline</span></td></tr>
+              <tr><td class="user-cell">t.nguyen</td><td>Viewed projects grid</td><td>Ho Chi Minh, VN</td><td><span class="status-pill active">Active</span></td></tr>
+              <tr><td class="user-cell">a.singh</td><td>Logged in</td><td>Pune, IN</td><td><span class="status-pill idle">Idle</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Security tab -->
+      <div class="dash-tab hidden" id="dash-tab-security">
+        <div class="dash-section-head">
+          <div class="eyebrow">Console</div>
+          <h2>Security</h2>
+        </div>
+        <div class="panel-block" style="max-width:560px;">
+          <h3>Update your credentials</h3>
+          <div id="admin-settings-msg" class="msg"></div>
+          <form id="admin-settings-form" autocomplete="off">
+            <div class="settings-grid">
+              <div class="field full">
+                <label for="admin-current-password">Current password</label>
+                <div class="input-wrap">
+                  <input type="password" id="admin-current-password" autocomplete="current-password">
+                  <button type="button" class="toggle-visibility" data-target="admin-current-password">Show</button>
+                </div>
+              </div>
+              <div class="field full">
+                <label for="admin-new-username">New username <span style="color:var(--text-faint)">(optional)</span></label>
+                <input type="text" id="admin-new-username" placeholder="Leave blank to keep current">
+              </div>
+              <div class="field">
+                <label for="admin-new-password">New password</label>
+                <div class="input-wrap">
+                  <input type="password" id="admin-new-password" autocomplete="new-password">
+                  <button type="button" class="toggle-visibility" data-target="admin-new-password">Show</button>
+                </div>
+              </div>
+              <div class="field">
+                <label for="admin-confirm-password">Confirm new password</label>
+                <div class="input-wrap">
+                  <input type="password" id="admin-confirm-password" autocomplete="new-password">
+                  <button type="button" class="toggle-visibility" data-target="admin-confirm-password">Show</button>
+                </div>
+              </div>
+            </div>
+            <div class="settings-actions">
+              <button type="submit" class="btn btn-primary" style="width:auto;">Save changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ USER PORTFOLIO VIEW ============ -->
+<div id="view-portfolio" class="view hidden">
+  <nav class="portfolio-nav">
+    <div class="pname" id="pf-nav-name">Alex Rivera</div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost btn-sm" id="pf-security-btn">Security settings</button>
+      <button class="btn btn-danger-outline btn-sm" id="pf-logout-btn">Log out</button>
+    </div>
+  </nav>
+
+  <header class="pf-hero">
+    <div class="eyebrow">Product designer & front-end developer</div>
+    <h1>I build interfaces that earn people's trust.</h1>
+    <p class="lede">Ten years spent turning ambiguous problems into calm, usable software — mostly for small teams shipping something they actually believe in.</p>
+    <div class="pf-cta">
+      <button class="btn btn-primary" style="width:auto;" onclick="document.getElementById('pf-contact').scrollIntoView({behavior:'smooth'})">Get in touch</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('pf-projects').scrollIntoView({behavior:'smooth'})">See the work</button>
+    </div>
+  </header>
+
+  <section class="pf-section" id="pf-about">
+    <h2>About</h2>
+    <p>I work at the seam between design and engineering — sketching flows, then writing the code that ships them. Most recently I've been focused on internal tools: the unglamorous dashboards that a whole team ends up living inside every day. I care more about a form that never confuses anyone than a homepage that wins an award.</p>
+  </section>
+
+  <section class="pf-section" id="pf-projects">
+    <h2>Featured projects</h2>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="p-tag">Internal tool</div>
+        <h3>Ledger — expense review console</h3>
+        <p>Rebuilt a finance team's approval queue, cutting average review time from four minutes to under one.</p>
+      </div>
+      <div class="project-card">
+        <div class="p-tag">Consumer app</div>
+        <h3>Harbor — trip planning for small groups</h3>
+        <p>Designed and shipped the shared-itinerary feature now used by roughly a third of active users.</p>
+      </div>
+      <div class="project-card">
+        <div class="p-tag">Design system</div>
+        <h3>Kiln — component library</h3>
+        <p>Authored a token-based system adopted across four product teams, replacing three inconsistent ones.</p>
+      </div>
+      <div class="project-card">
+        <div class="p-tag">Freelance</div>
+        <h3>Northbound — brand site & CMS</h3>
+        <p>End-to-end build for a climbing gym chain, from brand identity through a client-editable site.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pf-section" id="pf-skills">
+    <h2>Skills</h2>
+    <div class="skills-wrap">
+      <span class="skill-tag">Interface design</span>
+      <span class="skill-tag">JavaScript</span>
+      <span class="skill-tag">React</span>
+      <span class="skill-tag">Design systems</span>
+      <span class="skill-tag">Accessibility</span>
+      <span class="skill-tag">CSS architecture</span>
+      <span class="skill-tag">User research</span>
+      <span class="skill-tag">Prototyping</span>
+      <span class="skill-tag">Figma</span>
+    </div>
+  </section>
+
+  <section class="pf-section" id="pf-contact">
+    <h2>Contact</h2>
+    <p>Have a project in mind? Send a short note — I read every one of these myself.</p>
+    <div id="contact-msg" class="msg" style="max-width:520px;"></div>
+    <form class="contact-form" id="contact-form" autocomplete="off">
+      <div class="field">
+        <label for="contact-name">Name</label>
+        <input type="text" id="contact-name" placeholder="Your name">
+      </div>
+      <div class="field">
+        <label for="contact-email">Email</label>
+        <input type="email" id="contact-email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="contact-message">Message</label>
+        <textarea id="contact-message" rows="4" placeholder="What are you building?" style="width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:var(--radius-sm);font-size:14.5px;resize:vertical;"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:auto;">Send message</button>
+    </form>
+  </section>
+
+  <footer class="pf-footer">© <span id="pf-year"></span> · Built with Meridian</footer>
+</div>
+
+<!-- ============ USER SECURITY MODAL ============ -->
+<div id="user-security-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Security settings</h2>
+      <button class="modal-close" id="user-modal-close">&times;</button>
+    </div>
+    <div class="modal-sub">Update the username and password used to sign in.</div>
+    <div id="user-settings-msg" class="msg"></div>
+    <form id="user-settings-form" autocomplete="off">
+      <div class="field">
+        <label for="user-current-password">Current password</label>
+        <div class="input-wrap">
+          <input type="password" id="user-current-password" autocomplete="current-password">
+          <button type="button" class="toggle-visibility" data-target="user-current-password">Show</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="user-new-username">New username <span style="color:var(--text-faint)">(optional)</span></label>
+        <input type="text" id="user-new-username" placeholder="Leave blank to keep current">
+      </div>
+      <div class="field">
+        <label for="user-new-password">New password</label>
+        <div class="input-wrap">
+          <input type="password" id="user-new-password" autocomplete="new-password">
+          <button type="button" class="toggle-visibility" data-target="user-new-password">Show</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="user-confirm-password">Confirm new password</label>
+        <div class="input-wrap">
+          <input type="password" id="user-confirm-password" autocomplete="new-password">
+          <button type="button" class="toggle-visibility" data-target="user-confirm-password">Show</button>
+        </div>
+      </div>
+      <div class="settings-actions">
+        <button type="submit" class="btn btn-primary" style="width:auto;">Save changes</button>
+        <button type="button" class="btn btn-ghost" id="user-modal-cancel">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast-stack"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Storage & defaults ---------------- */
+  var CREDS_KEY = "meridian_credentials";
+  var SESSION_KEY = "meridian_session";
+
+  function defaultCredentials(){
+    return {
+      admin: { username: "ADMIN", password: "admin1809" },
+      user:  { username: "user",  password: "12345678" }
+    };
+  }
+
+  function initCredentials(){
+    var existing = localStorage.getItem(CREDS_KEY);
+    if(!existing){
+      localStorage.setItem(CREDS_KEY, JSON.stringify(defaultCredentials()));
+    }
+  }
+
+  function getCredentials(){
+    return JSON.parse(localStorage.getItem(CREDS_KEY));
+  }
+
+  function saveCredentials(creds){
+    localStorage.setItem(CREDS_KEY, JSON.stringify(creds));
+  }
+
+  function getSession(){
+    var raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  function setSession(role, username){
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ role: role, username: username }));
+  }
+
+  function clearSession(){
+    localStorage.removeItem(SESSION_KEY);
+  }
+
+  initCredentials();
+
+  /* ---------------- View routing ---------------- */
+  var views = {
+    login: document.getElementById("view-login"),
+    dashboard: document.getElementById("view-dashboard"),
+    portfolio: document.getElementById("view-portfolio")
+  };
+
+  function showView(name){
+    Object.keys(views).forEach(function(key){
+      views[key].classList.toggle("hidden", key !== name);
+    });
+    window.scrollTo(0,0);
+  }
+
+  function routeFromSession(){
+    var session = getSession();
+    if(!session){
+      showView("login");
+      return;
+    }
+    if(session.role === "admin"){
+      document.getElementById("admin-name-display").textContent = session.username;
+      document.getElementById("admin-avatar").textContent = session.username.charAt(0).toUpperCase();
+      showView("dashboard");
+    } else if(session.role === "user"){
+      showView("portfolio");
+    } else {
+      clearSession();
+      showView("login");
+    }
+  }
+
+  /* ---------------- Toasts ---------------- */
+  function toast(message, type){
+    var stack = document.getElementById("toast-stack");
+    var el = document.createElement("div");
+    el.className = "toast " + (type || "success");
+    el.textContent = message;
+    stack.appendChild(el);
+    setTimeout(function(){
+      el.style.transition = "opacity .25s ease";
+      el.style.opacity = "0";
+      setTimeout(function(){ el.remove(); }, 250);
+    }, 3200);
+  }
+
+  /* ---------------- Password visibility toggles ---------------- */
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest(".toggle-visibility");
+    if(!btn) return;
+    var input = document.getElementById(btn.getAttribute("data-target"));
+    if(!input) return;
+    var isPassword = input.type === "password";
+    input.type = isPassword ? "text" : "password";
+    btn.textContent = isPassword ? "Hide" : "Show";
+  });
+
+  /* ---------------- Login ---------------- */
+  var loginForm = document.getElementById("login-form");
+  var loginMsg = document.getElementById("login-msg");
+
+  loginForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var username = document.getElementById("login-username").value.trim();
+    var password = document.getElementById("login-password").value;
+    var creds = getCredentials();
+
+    loginMsg.style.display = "none";
+
+    if(!username || !password){
+      loginMsg.textContent = "Enter both a username and a password.";
+      loginMsg.className = "msg error";
+      return;
+    }
+
+    if(username === creds.admin.username && password === creds.admin.password){
+      setSession("admin", creds.admin.username);
+      loginForm.reset();
+      window.location.href = "index.html"; // <-- Redirect to the console
+      return;
+    }
+
+    if(username === creds.user.username && password === creds.user.password){
+      setSession("user", creds.user.username);
+      loginForm.reset();
+      window.location.href = "index.html"; // <-- Redirect to the console
+      return;
+    }
+    
+
+    loginMsg.textContent = "Incorrect username or password. Please try again.";
+    loginMsg.className = "msg error";
+  });
+
+  /* ---------------- Logout ---------------- */
+  function doLogout(){
+    clearSession();
+    showView("login");
+    document.getElementById("login-username").value = "";
+    document.getElementById("login-password").value = "";
+    loginMsg.style.display = "none";
+  }
+  document.getElementById("admin-logout-btn").addEventListener("click", doLogout);
+  document.getElementById("pf-logout-btn").addEventListener("click", doLogout);
+
+  /* ---------------- Dashboard tabs ---------------- */
+  var navItems = document.querySelectorAll(".sidebar-nav-item");
+  navItems.forEach(function(item){
+    item.addEventListener("click", function(){
+      navItems.forEach(function(i){ i.classList.remove("active"); });
+      item.classList.add("active");
+      document.querySelectorAll(".dash-tab").forEach(function(tab){ tab.classList.add("hidden"); });
+      document.getElementById("dash-tab-" + item.getAttribute("data-dash-tab")).classList.remove("hidden");
+    });
+  });
+
+  /* ---------------- Credential update (shared logic) ---------------- */
+  function updateCredentials(role, currentPassword, newUsername, newPassword, confirmPassword, msgEl){
+    var creds = getCredentials();
+    var record = creds[role];
+
+    msgEl.style.display = "none";
+
+    if(!currentPassword){
+      msgEl.textContent = "Enter your current password.";
+      msgEl.className = "msg error";
+      return false;
+    }
+    if(currentPassword !== record.password){
+      msgEl.textContent = "Current password is incorrect.";
+      msgEl.className = "msg error";
+      return false;
+    }
+    if(!newPassword && !newUsername){
+      msgEl.textContent = "Enter a new username and/or a new password to update.";
+      msgEl.className = "msg error";
+      return false;
+    }
+    if(newPassword || confirmPassword){
+      if(newPassword.length < 4){
+        msgEl.textContent = "New password must be at least 4 characters.";
+        msgEl.className = "msg error";
+        return false;
+      }
+      if(newPassword !== confirmPassword){
+        msgEl.textContent = "New password and confirmation do not match.";
+        msgEl.className = "msg error";
+        return false;
+      }
+    }
+    if(newUsername && newUsername.trim().length === 0){
+      msgEl.textContent = "Username cannot be blank.";
+      msgEl.className = "msg error";
+      return false;
+    }
+
+    var finalUsername = newUsername ? newUsername.trim() : record.username;
+    var finalPassword = newPassword ? newPassword : record.password;
+
+    creds[role] = { username: finalUsername, password: finalPassword };
+    saveCredentials(creds);
+
+    var session = getSession();
+    if(session){
+      session.username = finalUsername;
+      setSession(session.role, finalUsername);
+    }
+
+    msgEl.textContent = "Credentials updated. Use the new details next time you sign in.";
+    msgEl.className = "msg success";
+    return true;
+  }
+
+  /* ---------------- Admin settings form ---------------- */
+  var adminForm = document.getElementById("admin-settings-form");
+  var adminMsg = document.getElementById("admin-settings-msg");
+  adminForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var ok = updateCredentials(
+      "admin",
+      document.getElementById("admin-current-password").value,
+      document.getElementById("admin-new-username").value,
+      document.getElementById("admin-new-password").value,
+      document.getElementById("admin-confirm-password").value,
+      adminMsg
+    );
+    if(ok){
+      adminForm.reset();
+      document.getElementById("admin-name-display").textContent = getSession().username;
+      document.getElementById("admin-avatar").textContent = getSession().username.charAt(0).toUpperCase();
+      toast("Admin credentials updated successfully.", "success");
+    }
+  });
+
+  /* ---------------- User settings form (modal) ---------------- */
+  var userModal = document.getElementById("user-security-modal");
+  var userForm = document.getElementById("user-settings-form");
+  var userMsg = document.getElementById("user-settings-msg");
+
+  function openUserModal(){
+    userMsg.style.display = "none";
+    userForm.reset();
+    userModal.classList.remove("hidden");
+  }
+  function closeUserModal(){
+    userModal.classList.add("hidden");
+  }
+  document.getElementById("pf-security-btn").addEventListener("click", openUserModal);
+  document.getElementById("user-modal-close").addEventListener("click", closeUserModal);
+  document.getElementById("user-modal-cancel").addEventListener("click", closeUserModal);
+  userModal.addEventListener("click", function(e){
+    if(e.target === userModal) closeUserModal();
+  });
+
+  userForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var ok = updateCredentials(
+      "user",
+      document.getElementById("user-current-password").value,
+      document.getElementById("user-new-username").value,
+      document.getElementById("user-new-password").value,
+      document.getElementById("user-confirm-password").value,
+      userMsg
+    );
+    if(ok){
+      document.getElementById("pf-nav-name").textContent = getSession().username;
+      toast("Your credentials were updated successfully.", "success");
+      setTimeout(closeUserModal, 900);
+    }
+  });
+
+  /* ---------------- Contact form (portfolio, front-end only) ---------------- */
+  var contactForm = document.getElementById("contact-form");
+  var contactMsg = document.getElementById("contact-msg");
+  contactForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var name = document.getElementById("contact-name").value.trim();
+    var email = document.getElementById("contact-email").value.trim();
+    contactMsg.style.display = "none";
+    if(!name || !email){
+      contactMsg.textContent = "Please fill in your name and email.";
+      contactMsg.className = "msg error";
+      return;
+    }
+    contactMsg.textContent = "Thanks, " + name + " — your message has been sent.";
+    contactMsg.className = "msg success";
+    contactForm.reset();
+  });
+
+  /* ---------------- Init ---------------- */
+  document.getElementById("pf-year").textContent = new Date().getFullYear();
+  routeFromSession();
+
+})();
+</script>
+</body>
+</html>

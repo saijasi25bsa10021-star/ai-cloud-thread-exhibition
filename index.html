@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G1 — Cloud Threat Intelligence Console</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G1</div>
+      <div class="brand-text">
+        <span class="brand-name">G1</span>
+        <span class="brand-sub">Threat Console</span>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Main navigation">
+      <div class="nav-label">Monitor</div>
+      <button class="nav-item active" data-view="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>Overview</span>
+      </button>
+      <button class="nav-item" data-view="alerts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Threat Alerts</span>
+        <span class="nav-badge crit" id="navAlertBadge">—</span>
+      </button>
+      <button class="nav-item" data-view="explorer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Log Explorer</span>
+        <span class="nav-badge" id="navLogBadge">—</span>
+      </button>
+
+      <div class="nav-label">System</div>
+      <button class="nav-item" data-view="admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 8v4l2.5 2.5"/></svg>
+        <span>Admin Console</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="avatar">A</div>
+      <div class="user-meta">
+        <div class="user-name">admin</div>
+        <div class="user-role">ADMIN · SOC Team</div>
+      </div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div>
+      <div class="page-title" id="pageTitle">Overview</div>
+      <div class="page-sub" id="pageSub">Real-time cloud activity &amp; anomaly summary</div>
+    </div>
+    <label class="topbar-search" for="globalSearch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="globalSearch" type="text" placeholder="Search user, IP, action…">
+    </label>
+    <div class="topbar-right">
+      <div class="live-chip"><span class="live-dot"></span>LIVE</div>
+      <div class="clock" id="clock" aria-live="off"></div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ============ OVERVIEW ============ -->
+    <section class="view active" id="view-overview">
+      <div class="scanline" aria-hidden="true"></div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--accent-color:var(--signal)">
+          <div class="kpi-top">
+            <span class="kpi-label">Total Logs Processed</span>
+            <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiTotal">—</div>
+          <div class="kpi-foot"><span>10,000-row ingest window</span></div>
+        </div>
+        <div class="kpi-card" style="--accent-color:var(--crit)">
+          <div class="kpi-top">
+            <span class="kpi-label">Threats Detected</span>
+            <div class="kpi-icon" style="--icon-bg:var(--crit-dim); --icon-color:var(--crit)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiThreats">—</div>
+          <div class="kpi-foot"><span class="up" id="kpiThreatRate">—</span><span>&nbsp;of total traffic</span></div>
+        </div>
+        <div class="kpi-card" style="--accent-color:var(--high)">
+          <div class="kpi-top">
+            <span class="kpi-label">Failed Logins</span>
+            <div class="kpi-icon" style="--icon-bg:var(--high-dim); --icon-color:var(--high)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiFailed">—</div>
+          <div class="kpi-foot"><span class="flat">across all monitored IPs</span></div>
+        </div>
+        <div class="kpi-card" style="--accent-color:var(--ok)">
+          <div class="kpi-top">
+            <span class="kpi-label">Active Protected Users</span>
+            <div class="kpi-icon" style="--icon-bg:var(--ok-dim); --icon-color:var(--ok)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          </div>
+          <div class="kpi-value" id="kpiUsers">—</div>
+          <div class="kpi-foot"><span class="flat">identities under watch</span></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Hourly Threat Pattern</div>
+              <div class="panel-title-sub">Log volume vs. flagged threats, by hour of day</div>
+            </div>
+            <span class="panel-tag">24H WINDOW</span>
+          </div>
+          <div id="hourlyChart"></div>
+          <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--border)"></span>Total logs</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--crit)"></span>Threats</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Severity Breakdown</div>
+              <div class="panel-title-sub">Of all detected threats</div>
+            </div>
+          </div>
+          <div id="severityDonut"></div>
+          <div class="legend" id="severityLegend"></div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Threats by Action</div>
+          </div>
+          <div class="bar-rows" id="actionBars"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Threats by Country</div>
+          </div>
+          <div class="bar-rows" id="countryBars"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Highest-Risk Users</div>
+          </div>
+          <div class="bar-rows" id="userBars"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Critical &amp; High Alert Feed</div>
+              <div class="panel-title-sub">Most recent flagged events</div>
+            </div>
+            <span class="panel-tag mono">LIVE</span>
+          </div>
+          <div class="ticker" id="alertTicker"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">How Detection Works</div>
+          </div>
+          <div class="how-steps">
+            <div class="how-step">
+              <div class="how-num">01</div>
+              <div>
+                <div class="how-title">Feature extraction</div>
+                <div class="how-desc">Every log is enriched with hour-of-day, encoded action/country/user, and a rolling 10-minute failed-attempt count per IP.</div>
+              </div>
+            </div>
+            <div class="how-step">
+              <div class="how-num">02</div>
+              <div>
+                <div class="how-title">Isolation Forest scoring</div>
+                <div class="how-desc">An unsupervised Isolation Forest (100 trees, 8% contamination) flags behavior that deviates from the learned baseline.</div>
+              </div>
+            </div>
+            <div class="how-step">
+              <div class="how-num">03</div>
+              <div>
+                <div class="how-title">Deterministic rule pass</div>
+                <div class="how-desc">Three hard rules run alongside the model: brute-force velocity, geo + high-risk-action combinations, and logins from untrusted regions.</div>
+              </div>
+            </div>
+            <div class="how-step">
+              <div class="how-num">04</div>
+              <div>
+                <div class="how-title">Narrative &amp; recommendation</div>
+                <div class="how-desc">Each flagged event gets a plain-language reason and a severity-matched remediation checklist for the analyst.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ALERTS ============ -->
+    <section class="view" id="view-alerts">
+      <div class="toolbar">
+        <label class="search-box" for="alertSearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="alertSearch" type="text" placeholder="Search alerts by user, IP, action, country…">
+        </label>
+        <div class="chip-group" id="severityChips">
+          <button class="chip active" data-sev="all" style="--chip-color:var(--signal); --chip-bg:var(--signal-dim)">All</button>
+          <button class="chip" data-sev="Critical" style="--chip-color:var(--crit); --chip-bg:var(--crit-dim)"><span class="dot" style="background:var(--crit)"></span>Critical</button>
+          <button class="chip" data-sev="High" style="--chip-color:var(--high); --chip-bg:var(--high-dim)"><span class="dot" style="background:var(--high)"></span>High</button>
+          <button class="chip" data-sev="Medium" style="--chip-color:var(--med); --chip-bg:var(--med-dim)"><span class="dot" style="background:var(--med)"></span>Medium</button>
+        </div>
+        <span class="result-count" id="alertResultCount"></span>
+      </div>
+      <div class="alert-list" id="alertList"></div>
+      <div class="pagination" id="alertPagination"></div>
+    </section>
+
+    <!-- ============ LOG EXPLORER ============ -->
+    <section class="view" id="view-explorer">
+      <div class="toolbar">
+        <label class="search-box" for="logSearch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="logSearch" type="text" placeholder="Search all 10,000 logs…">
+        </label>
+        <div class="chip-group" id="logStatusChips">
+          <button class="chip active" data-status="all" style="--chip-color:var(--signal); --chip-bg:var(--signal-dim)">All</button>
+          <button class="chip" data-status="threat" style="--chip-color:var(--crit); --chip-bg:var(--crit-dim)">Flagged only</button>
+        </div>
+        <span class="result-count" id="logResultCount"></span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th data-key="id">Log ID<span class="sort-caret">▲▼</span></th>
+              <th data-key="ts">Timestamp<span class="sort-caret">▲▼</span></th>
+              <th data-key="user">User<span class="sort-caret">▲▼</span></th>
+              <th data-key="action">Action<span class="sort-caret">▲▼</span></th>
+              <th data-key="ip">IP Address<span class="sort-caret">▲▼</span></th>
+              <th data-key="country">Country<span class="sort-caret">▲▼</span></th>
+              <th data-key="status">Status<span class="sort-caret">▲▼</span></th>
+              <th data-key="sev">Severity<span class="sort-caret">▲▼</span></th>
+            </tr>
+          </thead>
+          <tbody id="logTableBody"></tbody>
+        </table>
+      </div>
+      <div class="log-cards" id="logCards"></div>
+      <div class="pagination" id="logPagination"></div>
+    </section>
+
+    <!-- ============ ADMIN ============ -->
+    <section class="view" id="view-admin">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">SOC Admin Access Control</div>
+            <div class="panel-title-sub">Review locked sessions, failed authentication alerts, and restore accounts</div>
+          </div>
+        </div>
+        <div class="account-list" id="accountList"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
