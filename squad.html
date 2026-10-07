@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Cloud Threat Hunter — Engineering Squad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12141c;
+  --panel: #1a1d27;
+  --panel-2: #20232f;
+  --panel-3: #252938;
+  --accent: #c9a24b;
+  --accent-dim: #9c7f3d;
+  --accent-soft: rgba(201, 162, 75, 0.14);
+  --text: #ededf0;
+  --text-muted: #9195a6;
+  --text-faint: #6b6f80;
+  --border: #2b2f3d;
+  --border-soft: #232735;
+  --success: #4caf7d;
+  --success-soft: rgba(76, 175, 125, 0.14);
+  --error: #e2604f;
+  --error-soft: rgba(226, 96, 79, 0.14);
+  --cyan: #38bdf8;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse 900px 500px at 15% 10%, rgba(201, 162, 75, 0.06), transparent 60%),
+    radial-gradient(ellipse 800px 500px at 85% 90%, rgba(56, 189, 248, 0.05), transparent 60%),
+    linear-gradient(var(--border-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+}
+
+header {
+  text-align: center;
+  padding: 50px 20px 24px;
+}
+.brand-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(30px, 4.5vw, 48px);
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+p.subtitle {
+  color: var(--text-muted);
+  font-size: 15px;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.nav-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 28px 0;
+  flex-wrap: wrap;
+}
+.btn-nav {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-nav:hover, .btn-nav.active {
+  background: var(--panel-3);
+  color: var(--text);
+  border-color: var(--accent-dim);
+}
+
+.container {
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+/* SQUAD CARDS */
+.squad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+  margin-bottom: 50px;
+}
+.squad-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  text-align: center;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.squad-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.5);
+}
+
+.avatar-frame {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  overflow: hidden;
+  background: var(--panel-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(201, 162, 75, 0.15);
+}
+.avatar-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.squad-name {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.squad-role {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.squad-badge {
+  display: inline-block;
+  background: var(--panel-2);
+  border: 1px solid var(--border-soft);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.squad-desc {
+  font-size: 12.5px;
+  color: var(--text-faint);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  min-height: 44px;
+}
+.launch-btn {
+  width: 100%;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.launch-btn:hover {
+  background: var(--accent);
+  color: #12141c;
+  border-color: var(--accent);
+}
+
+/* ARCADE GAME PANEL */
+.console-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  margin-bottom: 40px;
+}
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 18px;
+}
+.panel-stats {
+  display: flex;
+  gap: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+}
+.stat-tag {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+.arena {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.grid-node {
+  height: 100px;
+  background: var(--panel-2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+.threat-node {
+  font-size: 34px;
+  cursor: pointer;
+  animation: popNode 0.15s ease-out;
+}
+.threat-node:hover { transform: scale(1.15); }
+@keyframes popNode {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.btn-primary-console {
+  background: var(--accent);
+  color: #12141c;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.btn-primary-console:hover { filter: brightness(1.1); }
+
+/* SECURITY QUIZ */
+.quiz-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  text-align: center;
+}
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.quiz-choice {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.quiz-choice:hover {
+  background: var(--panel-3);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+@media(max-width: 600px) {
+  .arena { grid-template-columns: repeat(2, 1fr); }
+  .quiz-options { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-pill">SOC Architecture Team</div>
+  <h1>Engineering Squad</h1>
+  <p class="subtitle">5 teammates collaborating on unsupervised telemetry scoring, threat heuristics, and real-time SIEM analytics.</p>
+
+  <div class="nav-actions">
+    <a href="login.html" class="btn-nav">← Back to Login</a>
+    <button class="btn-nav active" onclick="scrollToSec('squad')">Team Members</button>
+    <button class="btn-nav" onclick="scrollToSec('arcade')">Threat Neutralizer</button>
+    <button class="btn-nav" onclick="scrollToSec('quiz')">Security Verification</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ==================== TEAM PROFILES ==================== -->
+  <section id="squad">
+    <div class="squad-grid">
+
+      <!-- Saijasi Sinha -->
+      <div class="squad-card">
+        <div>
+          <div class="avatar-frame">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Saijasi" alt="Saijasi Sinha" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Saijasi'">
+          </div>
+          <div class="squad-name">Saijasi Sinha</div>
+          <div class="squad-role">Full Stack (Frontend & Backend)</div>
+          <div class="squad-badge">Core Engine Lead</div>
+          <div class="squad-desc">Bridges the core ML detection pipeline with responsive client-side telemetry components[cite: 4].</div>
+        </div>
+        <button class="launch-btn" onclick="directLogin('Saijasi Sinha', 'Full Stack Lead')">Sign In to Console</button>
+      </div>
+
+      <!-- Ayaan Ahmed -->
+      <div class="squad-card">
+        <div>
+          <div class="avatar-frame">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Ayaan" alt="Ayaan Ahmed" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Ayaan'">
+          </div>
+          <div class="squad-name">Ayaan Ahmed</div>
+          <div class="squad-role">Frontend Lead, Dashboard Integration</div>
+          <div class="squad-badge">UI Integrator</div>
+          <div class="squad-desc">Engineers interactive dashboard views and modular telemetry navigation interfaces[cite: 4].</div>
+        </div>
+        <button class="launch-btn" onclick="directLogin('Ayaan Ahmed', 'Frontend Lead')">Sign In to Console</button>
+      </div>
+
+      <!-- Jivan Deshmukh -->
+      <div class="squad-card">
+        <div>
+          <div class="avatar-frame">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Jivan" alt="Jivan Deshmukh" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Jivan'">
+          </div>
+          <div class="squad-name">Jivan Deshmukh</div>
+          <div class="squad-role">Frontend, Dashboard Raw Data Integration</div>
+          <div class="squad-badge">Data Pipe Engineer</div>
+          <div class="squad-desc">Binds live CloudTrail raw event payloads to real-time client data explorer grids[cite: 4].</div>
+        </div>
+        <button class="launch-btn" onclick="directLogin('Jivan Deshmukh', 'Frontend & Data Lead')">Sign In to Console</button>
+      </div>
+
+      <!-- Riddhi Gupta -->
+      <div class="squad-card">
+        <div>
+          <div class="avatar-frame">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Riddhi" alt="Riddhi Gupta" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Riddhi'">
+          </div>
+          <div class="squad-name">Riddhi Gupta</div>
+          <div class="squad-role">Presentation, PPT, Telemetry Insights & Representable Dashboard Data</div>
+          <div class="squad-badge">Insights & Presentation Lead</div>
+          <div class="squad-desc">Structures anomaly datasets into clear presentation flows and evaluator-ready dashboard telemetry visuals[cite: 4].</div>
+        </div>
+        <button class="launch-btn" onclick="directLogin('Riddhi Gupta', 'Presentation Lead')">Sign In to Console</button>
+      </div>
+
+      <!-- Rania -->
+      <div class="squad-card">
+        <div>
+          <div class="avatar-frame">
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Rania" alt="Rania" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Rania'">
+          </div>
+          <div class="squad-name">Rania Sharma</div>
+          <div class="squad-role">Dashboard & Raw Telemetry Data</div>
+          <div class="squad-badge">Telemetry Architect</div>
+          <div class="squad-desc">Curates synthetic AWS CloudTrail schemas, event distribution baselines, and data prep feeds[cite: 4].</div>
+        </div>
+        <button class="launch-btn" onclick="directLogin('Rania', 'Raw Telemetry Lead')">Sign In to Console</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== MINI GAME ==================== -->
+  <section id="arcade">
+    <div class="console-panel">
+      <div class="panel-header">
+        <div>
+          <h2 style="font-family:'Fraunces',serif; font-size:22px; margin-bottom:4px;">Threat Neutralization Sandbox</h2>
+          <p style="color:var(--text-muted); font-size:13px;">Test simulated firewall reaction speeds against incoming outlier events[cite: 4].</p>
+        </div>
+        <div class="panel-stats">
+          <div class="stat-tag">Time: <span id="timer" style="color:var(--text)">15</span>s</div>
+          <div class="stat-tag">Blocked: <span id="score" style="color:var(--accent)">0</span></div>
+        </div>
+        <button class="btn-primary-console" id="start-btn" onclick="startWhackGame()">Start Simulation</button>
+      </div>
+
+      <div class="arena">
+        <div class="grid-node" id="hole-0"></div>
+        <div class="grid-node" id="hole-1"></div>
+        <div class="grid-node" id="hole-2"></div>
+        <div class="grid-node" id="hole-3"></div>
+        <div class="grid-node" id="hole-4"></div>
+        <div class="grid-node" id="hole-5"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== QUIZ ==================== -->
+  <section id="quiz">
+    <div class="quiz-panel">
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent); font-weight:600; margin-bottom:8px;">Evaluation Checkpoint</div>
+      <h2 style="font-family:'Fraunces',serif; font-size:20px; margin-bottom:8px;" id="quiz-question">Loading Question...</h2>
+      <p style="color:var(--text-muted); font-size:13px;" id="quiz-explain">Select the correct defense response:</p>
+
+      <div class="quiz-options" id="quiz-options"></div>
+      <div id="quiz-feedback" style="margin-top:16px; font-weight:600; font-size:14px;"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+function scrollToSec(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// Session routing straight into index.html
+function directLogin(username, role) {
+  localStorage.setItem("meridian_session", JSON.stringify({
+    username: username,
+    role: role
+  }));
+  window.location.href = "index.html";
+}
+
+// Mini Game Logic
+const THREAT_ICONS = ["⚠️", "🚨", "🛡️", "⚡", "🔒"];
+let score = 0, timeLeft = 15, gameTimer = null, moleTimer = null;
+
+function startWhackGame() {
+  score = 0;
+  timeLeft = 15;
+  document.getElementById('score').textContent = score;
+  document.getElementById('timer').textContent = timeLeft;
+  document.getElementById('start-btn').disabled = true;
+
+  clearInterval(gameTimer);
+  clearInterval(moleTimer);
+
+  moleTimer = setInterval(spawnThreat, 650);
+
+  gameTimer = setInterval(() => {
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(gameTimer);
+      clearInterval(moleTimer);
+      clearHoles();
+      document.getElementById('start-btn').disabled = false;
+      document.getElementById('start-btn').textContent = "Run Again";
+      alert(`Simulation completed. You mitigated ${score} anomaly vectors.`);
+    }
+  }, 1000);
+}
+
+function clearHoles() {
+  for(let i=0; i<6; i++) {
+    document.getElementById(`hole-${i}`).innerHTML = '';
+  }
+}
+
+function spawnThreat() {
+  clearHoles();
+  const randHole = Math.floor(Math.random() * 6);
+  const randIcon = THREAT_ICONS[Math.floor(Math.random() * THREAT_ICONS.length)];
+  const hole = document.getElementById(`hole-${randHole}`);
+  
+  const node = document.createElement('div');
+  node.className = 'threat-node';
+  node.textContent = randIcon;
+  node.onclick = () => {
+    score += 1;
+    document.getElementById('score').textContent = score;
+    node.textContent = '✓';
+    setTimeout(() => { node.remove(); }, 120);
+  };
+  hole.appendChild(node);
+}
+
+// Security Quiz Questions
+const questions = [
+  {
+    q: "A user account authenticates from Mumbai and 4 minutes later from Frankfurt. What is this categorized as?",
+    options: ["Network Latency Spike", "Impossible Velocity Anomaly", "Standard AWS IAM Rotation", "DNS Resolution Delay"],
+    correct: 1,
+    note: "The heuristic engine flags this as an impossible physical travel anomaly[cite: 4]."
+  },
+  {
+    q: "What does the 0.08 contamination parameter represent in our Isolation Forest model?",
+    options: ["Expected 8% anomaly ratio in training telemetry", "Random seed multiplier", "Model convergence rate", "Tree depth ceiling"],
+    correct: 0,
+    note: "Contamination specifies the expected proportion of outliers injected into the synthetic dataset[cite: 4]."
+  },
+  {
+    q: "Which response mechanism is triggered upon detecting 3 consecutive failed login attempts?",
+    options: ["Silent telemetry log", "24-hour defensive account lockout", "Server reboot", "Token revocation only"],
+    correct: 1,
+    note: "Hard security rules initiate immediate account lockout to stop brute-force flooding[cite: 4]."
+  }
+];
+
+let qIndex = 0;
+function loadQuiz() {
+  const item = questions[qIndex];
+  document.getElementById('quiz-question').textContent = item.q;
+  document.getElementById('quiz-feedback').textContent = '';
+  const optsContainer = document.getElementById('quiz-options');
+  optsContainer.innerHTML = '';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-choice';
+    btn.textContent = opt;
+    btn.onclick = () => checkQuiz(idx, item.correct, item.note);
+    optsContainer.appendChild(btn);
+  });
+}
+
+function checkQuiz(chosen, correct, note) {
+  const fb = document.getElementById('quiz-feedback');
+  if (chosen === correct) {
+    fb.innerHTML = `<span style="color:var(--success)">Correct: ${note}</span>`;
+    setTimeout(() => {
+      qIndex = (qIndex + 1) % questions.length;
+      loadQuiz();
+    }, 2000);
+  } else {
+    fb.innerHTML = `<span style="color:var(--error)">Incorrect. Try again.</span>`;
+  }
+}
+loadQuiz();
+</script>
+</body>
+</html>
